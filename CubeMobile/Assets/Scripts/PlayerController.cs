@@ -5,6 +5,7 @@ public class PlayerController : MonoBehaviour
 {
     private Rigidbody rb;
     private Vector2 movementInput;
+    public ParticleSystem playerDestruction;
 
     [SerializeField] private float speed = 5f;
     [SerializeField] private float maxSpeed = 20f;
@@ -33,6 +34,7 @@ public class PlayerController : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Obstacle"))
         {
+            Instantiate(playerDestruction, transform.position, Quaternion.identity);
             Destroy(gameObject);
         }
     }

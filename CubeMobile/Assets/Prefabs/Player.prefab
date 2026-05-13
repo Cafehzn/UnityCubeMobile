@@ -185,5 +185,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ee425528a0fe5342b49a2de3b491d7f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
+  playerDestruction: {fileID: 5303190403436601270, guid: bd80e575b03694f4b96bb650f07f7c51, type: 3}
   speed: 5
   maxSpeed: 20
