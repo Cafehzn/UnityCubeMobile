@@ -1,5 +1,7 @@
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class GameManager : MonoBehaviour
 {
@@ -8,6 +10,33 @@ public class GameManager : MonoBehaviour
     public bool isGameOver = false;
     public float spawnY = 12f;
     public float spawnX = 8.5f;
+
+    [SerializeField] private InputActionReference cancelAction;
+
+    private void OnEnable()
+    {
+        cancelAction.action.Enable();
+        //Event Register
+        cancelAction.action.performed += OnCancel;
+    }
+    private void OnDisable()
+    {
+        //Event Remove
+        cancelAction.action.performed -= OnCancel;
+        cancelAction.action.Disable();
+    }
+    private void OnCancel(InputAction.CallbackContext context)
+    {
+        //Debug.Log("ESC pressed");
+        if(Time.timeScale == 0f)
+        {
+            StartCoroutine(ScaleTime(0f, 1f, 0.5f));
+        }
+        else if(Time.timeScale == 1f)
+        {
+            StartCoroutine(ScaleTime(1f, 0f, 0.5f));
+        }
+    }
 
     private void Start()
     {
@@ -35,4 +64,26 @@ public class GameManager : MonoBehaviour
             yield return new WaitForSeconds(spawnInterval);
         }
     }
+
+    private IEnumerator ScaleTime(float start, float end, float duration)
+    {
+        float lastTime = Time.realtimeSinceStartup;
+        float timer = 0.0f;
+
+        while (timer < duration)
+        {
+            //Interpol and suavization of time
+            Time.timeScale = Mathf.Lerp(start, end, timer / duration);
+            //Physics time consistence adjustiment
+            Time.fixedDeltaTime = 0.02f * Time.deltaTime;
+
+            timer += Time.realtimeSinceStartup - lastTime;
+            lastTime = Time.realtimeSinceStartup;
+
+            yield return null;
+        }
+
+        Time.timeScale = end;
+        Time.fixedDeltaTime = 0.02f * Time.deltaTime;
+     }
 }
