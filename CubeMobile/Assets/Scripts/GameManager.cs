@@ -6,6 +6,9 @@ using UnityEngine.InputSystem;
 
 public class GameManager : MonoBehaviour
 {
+
+    public static GameManager Instance {  get; private set; }
+
     [Header("Spawn Objects")]
     [SerializeField] private GameObject obstaclePrefab;
     public float spawnInterval = 2f;
@@ -24,6 +27,9 @@ public class GameManager : MonoBehaviour
     private int score = 0;
     private float timeScore = 0f;
 
+    [Header("End Run")]
+    public GameObject gameOverScreen;
+
     private void OnEnable()
     {
         cancelAction.action.Enable();
@@ -38,6 +44,8 @@ public class GameManager : MonoBehaviour
     }
     private void OnCancel(InputAction.CallbackContext context)
     {
+        if (isGameOver) { return; }//Cannot pause after game over   
+
         //Debug.Log("ESC pressed");
         if(Time.timeScale == 0f)
         {
@@ -51,6 +59,18 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
     private void Start()
     {
         StartCoroutine(SpawnObstacle());
@@ -58,6 +78,11 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
+        if (isGameOver)
+        {
+            return;//Stop Score
+        }
+        scoreText.gameObject.SetActive(true);
         ToPoint();
     }
 
@@ -119,5 +144,14 @@ public class GameManager : MonoBehaviour
     public void Enable()
     {
         gameObject.SetActive(true);
+    }
+
+    public void GameOver()
+    {
+        if (isGameOver)
+        {
+            gameOverScreen.SetActive(true);
+            return;
+        }
     }
 }

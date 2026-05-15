@@ -4,14 +4,20 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
+    [Header("Player Controller")]
     private Rigidbody rb;
     private Vector2 movementInput;
-    public ParticleSystem playerDestruction;
-
     [SerializeField] private float speed = 5f;
     [SerializeField] private float maxSpeed = 20f;
 
+    [Header("Particle System")]
+    public ParticleSystem playerDestruction;
+
     private CinemachineImpulseSource _impulseSource;
+
+    [Header("Cinemachine")]
+    public CinemachineCamera cam;
+    public CinemachineCamera camZoom;
 
     private void Start()
     {
@@ -24,6 +30,11 @@ public class PlayerController : MonoBehaviour
     }
     private void FixedUpdate()
     {
+        if (GameManager.Instance == null || GameManager.Instance.isGameOver)
+        {
+            return;
+        }
+
         Vector3 moveDirection = 
             new Vector3(movementInput.x, 0f, movementInput.y) * speed;
 
@@ -38,6 +49,11 @@ public class PlayerController : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Obstacle"))
         {
+            cam.gameObject.SetActive(false);
+            camZoom.gameObject.SetActive(true);
+
+            GameManager.Instance.isGameOver = true;
+
             Instantiate(playerDestruction, transform.position, Quaternion.identity);
             _impulseSource.GenerateImpulse();
             Destroy(gameObject);

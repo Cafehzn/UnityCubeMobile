@@ -7,8 +7,18 @@ public class Menu : MonoBehaviour
 
     public void Play()
     {
-        _gameManager.Enable();
+        GetComponent<CanvasGroup>().LeanAlpha(0, 0.2f).setOnComplete(StartGame);
+    }
 
+    private void Start()
+    {
+        GetComponentInChildren<TMPro.TextMeshProUGUI>().
+            gameObject.LeanScale(new Vector3(1.2f, 1.2f, 1.2f), 0.5f).setLoopPingPong();
+    }
+
+    private void StartGame()
+    {
+        _gameManager.Enable();
         Destroy(gameObject);
     }
 }
