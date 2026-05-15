@@ -1,17 +1,28 @@
 using System.Collections;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class GameManager : MonoBehaviour
 {
+    [Header("Spawn Objects")]
     [SerializeField] private GameObject obstaclePrefab;
     public float spawnInterval = 2f;
     public bool isGameOver = false;
     public float spawnY = 12f;
     public float spawnX = 8.5f;
 
+    [Header("Maping Controller")]
     [SerializeField] private InputActionReference cancelAction;
+
+    [Header("To Pause")]
+    public GameObject pauseMenu;
+
+    [Header("Points")]
+    [SerializeField] private TextMeshProUGUI scoreText;
+    private int score = 0;
+    private float timeScore = 0f;
 
     private void OnEnable()
     {
@@ -31,16 +42,23 @@ public class GameManager : MonoBehaviour
         if(Time.timeScale == 0f)
         {
             StartCoroutine(ScaleTime(0f, 1f, 0.5f));
+            pauseMenu.SetActive(false);
         }
         else if(Time.timeScale == 1f)
         {
             StartCoroutine(ScaleTime(1f, 0f, 0.5f));
+            pauseMenu.SetActive(true);
         }
     }
 
     private void Start()
     {
         StartCoroutine(SpawnObstacle());
+    }
+
+    private void Update()
+    {
+        ToPoint();
     }
 
     private IEnumerator SpawnObstacle()
@@ -86,4 +104,20 @@ public class GameManager : MonoBehaviour
         Time.timeScale = end;
         Time.fixedDeltaTime = 0.02f * Time.deltaTime;
      }
+    private void ToPoint()
+    {
+        timeScore += Time.deltaTime;
+        if(timeScore > 1)
+        {
+            score++;
+            scoreText.text = "Score: " + score;
+            timeScore = 0f;
+        }
+    }
+
+    //Can be acessed by other scripts
+    public void Enable()
+    {
+        gameObject.SetActive(true);
+    }
 }
