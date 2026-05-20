@@ -52,7 +52,7 @@ public class PlayerController : MonoBehaviour
             cam.gameObject.SetActive(false);
             camZoom.gameObject.SetActive(true);
 
-            GameManager.Instance.isGameOver = true;
+            GameManager.Instance.GameOver();
 
             Instantiate(playerDestruction, transform.position, Quaternion.identity);
             _impulseSource.GenerateImpulse();

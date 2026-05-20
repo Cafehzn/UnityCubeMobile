@@ -26,9 +26,12 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI scoreText;
     private int score = 0;
     private float timeScore = 0f;
+    [SerializeField] private TextMeshProUGUI finalScoretxt;
+    [SerializeField] private TextMeshProUGUI highScoreTxt;
+    private int highScore;
 
     [Header("End Run")]
-    public GameObject gameOverScreen;
+    [SerializeField] private GameObject gameOverScreen;
 
     private void OnEnable()
     {
@@ -64,7 +67,7 @@ public class GameManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject);
+            //DontDestroyOnLoad(gameObject);
         }
         else
         {
@@ -73,6 +76,8 @@ public class GameManager : MonoBehaviour
     }
     private void Start()
     {
+        highScore = PlayerPrefs.GetInt("HighScore", 0);
+
         StartCoroutine(SpawnObstacle());
     }
 
@@ -148,10 +153,33 @@ public class GameManager : MonoBehaviour
 
     public void GameOver()
     {
-        if (isGameOver)
+        if (score > highScore)
         {
-            gameOverScreen.SetActive(true);
-            return;
+            highScore = score;
+
+            PlayerPrefs.SetInt("HighScore", highScore);
+            PlayerPrefs.Save();
         }
+
+        finalScoretxt.text = "Score: " + score;
+        highScoreTxt.text = "High Score: " + highScore;
+
+        isGameOver = true;
+        gameOverScreen.SetActive(true);
+        scoreText.gameObject.SetActive(false);
+        
+    }
+    public void RestartGame()
+    {
+        Time.timeScale = 1f;
+        UnityEngine.SceneManagement.SceneManager.LoadScene(0);
+    }
+    public void QuitGame()
+    {
+        Application.Quit();
+
+        #if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+        #endif
     }
 }
